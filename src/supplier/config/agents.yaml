@@ -1,6 +1,6 @@
 retrieve_suppliers:
   role: >
-    {topic}  Suppliers Retriever
+    {topic}  Suppliers Retriever in {country}
   goal: >
     Uncover cutting-edge developments in {topic}
   backstory: >

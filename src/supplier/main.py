@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 import sys
 import warnings
-
+import os
+import agentops
 from datetime import datetime
-
 from supplier.crew import Supplier
+
+# Initialize agentops
+agentops.init(
+    api_key=os.getenv("AGENTOPS_API_KEY"),
+)
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -33,7 +38,8 @@ def train():
     Train the crew for a given number of iterations.
     """
     inputs = {
-        "topic": "AI LLMs"
+        'topic': 'Garmin',
+        'country': "USA"
     }
     try:
         Supplier().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
@@ -56,7 +62,8 @@ def test():
     Test the crew execution and returns the results.
     """
     inputs = {
-        "topic": "AI LLMs"
+        'topic': 'Garmin',
+        'country': "USA"
     }
     try:
         Supplier().crew().test(n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs)
