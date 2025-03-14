@@ -1,0 +1,115 @@
+retrieve_suppliers_task:
+  description: >
+    Use the Serper tool to search for suppliers related to the input topic .
+    The topic is provided by the user (e.g., "Garmin" or any other term).
+    Execute multiple search queries using the input topic, for example:
+      - "{topic} reliable,potentials,top-rated potential distributors {country}"
+      - "{topic} reliable,potentials,top-rated potential and authorised suppliers {country}"
+      - "{topic} reliable,potentials,top-rated  retailers {country}"
+    
+    Aggregate the results into a structured dataset including:
+      - **Supplier name and description except "Amazon"**
+      - **Main website link**
+      - **Any additional metadata or sitelinks.**
+    
+
+  expected_output: >
+    A structured JSON containing supplier  details:
+      - `business_name`
+      - `url`
+      - `description`
+      - `metadata` (if available)
+  agent: retrieve_suppliers  # This agent uses SerperDevTool
+
+domain_and_trustpilot_researcher_task:
+  description: >
+    Based on the CombinedTool, for each supplier from search results, perform the following:
+      1. Fetch the domain age for the supplier website.
+         - Ensure the input URL is properly formatted.
+         - If a lookup fails due to validation or API errors, record a placeholder ("Check Manually").
+      2. Retrieve Trustpilot review data by searching for business reviews.
+         - Extract the "og:title" and "AggregateRating" data.
+         - If the information is unavailable, return "Check Manually".
+      3. Fetch ZoomInfo company data:
+         - Query for a ZoomInfo URL using the business name and scrape company details.
+         - From the ZoomInfo response, extract key fields such as "name", "url", "foundingYear", "revenue", "address", and "contact number".
+         - Additionally, extract email information from the "emailPatterns" field (specifically, the "sampleemail" value).
+         - Include the email as both "contact_email" and as a separate "email" field in the output.
+         - If any of the information is unavailable, record a placeholder ("Check Manually").
+
+  expected_output: >
+    A JSON dictionary mapping each supplier to its research data. For example:
+    {
+      "Supplier Name": {
+        "website_url": "https://www.example.com",
+        "domain_age": "15 years",
+        "trustpilot": {
+          "trustpilot_rating": "4.2/5"
+        },
+        "zoominfo": {
+          "name": "Tesla",
+          "url": "www.tesla.com",
+          "foundingYear": "2003",
+          "revenue": "123",
+          "address": "19266 Coastal Hwy Unit 4, Rehoboth Beach, Delaware, 19971, United States",
+          "contact number": "(302) 786-5213",
+          "contact_email": "JSmith@tesla.com",
+          "email": "JSmith@tesla.com",
+        }
+      }
+    }
+
+  agent: domain_researcher_agent
+
+  input:
+    suppliers_data: retrieve_suppliers_task
+
+
+
+
+ai_suppliers_write_task:
+  description: >
+    Review the context you have received and expand each topic into a comprehensive section for a report.
+    DO NOT include Amazon,Quora or anyother research forums in the report.
+    
+    The report should include:
+      - Detailed descriptions of each supplier's business model, offerings, and any other relevant information for the supplier research team.
+      - The supplier’s associated URL.
+      - Domain age information (number of years since domain registration) for each supplier.
+      - Trustpilot ratings along with any additional review insights.
+      - Complete ZoomInfo details for each supplier, including (but not limited to) name, URL, foundingYear, revenue, email, contact number (if available), address, techUsed, competitors, executives, and other metadata.
+    
+    Additionally, include a combined data summary table (formatted in markdown) that consolidates key information. The table should have columns such as:
+      - Supplier Name
+      - URL
+      - Domain Age
+      - Trustpilot Rating
+      - Contact Email
+      - Founding Year
+      - Contact Details
+      - Revenue
+      - Employees
+      - Address
+      
+    Feel free to add other columns that you consider beneficial for the supplier acquisition team. Ensure that the report is structured in clear sections with dedicated headings for each supplier and that the markdown table is easily readable.
+
+  expected_output: >
+    A well-structured, fully fledged markdown report that includes:
+      - Main sections covering each supplier (excluding Amazon), with each section providing thorough insights into the supplier's credibility, reputation, and offerings.
+      - Each supplier's section should include:
+          - **Supplier Name** and **URL**
+          - **Domain Age** (in years)
+          - **Trustpilot Rating** along with review insights
+          - **ZoomInfo Details**: a complete set of data fields (name, URL, foundingYear, revenue, email, contact number, address, techUsed, competitors, executives, and other metadata if available)
+      - A combined markdown table summarizing key data points such as:
+          | Supplier Name | URL           | Domain Age | Trustpilot Rating | Contact Email           | Founding Year | Contact Details             | Revenue          | Employees | Address                                                  |
+          |---------------|---------------|------------|-------------------|-------------------------|---------------|-----------------------------|------------------|-----------|----------------------------------------------------------|
+          | Volza         | www.volza.com | 9 years    | Average (3.7/5)   | example@volza.com       | 2017          | (example: Phone, Email info)| $52.093 Million  | 248       | 19266 Coastal Hwy Unit 4, Rehoboth Beach, Delaware, 19971, United States |
+      - Detailed analysis in each section and clear markdown formatting with headings, bullet points, and tables.
+
+  agent: ai_suppliers_writer
+
+
+
+
+
