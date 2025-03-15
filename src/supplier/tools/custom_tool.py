@@ -23,7 +23,7 @@ class SerperSearchTool(BaseTool):
         "Retrieves verified suppliers, their websites, descriptions, and metadata."
     )  # ✅ Corrected with type annotation
 
-    def _run(self, topic: str, country: str, max_pages: int = 5):
+    def _run(self, topic: str, country: str, max_pages: int = 3,queries: list[str] = None):
         """
         Searches for verified suppliers using Serper API with multi-page retrieval.
         """
@@ -31,11 +31,11 @@ class SerperSearchTool(BaseTool):
         base_url = "https://google.serper.dev/search"
         headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}
 
-        queries = [
-            f"{topic}reliable,potentials,top-rated potential distributors {country}",
-            f"{topic} reliable,potentials,top-rated potential suppliers {country}",
-            f"{topic}reliable,potentials,top-rated potential retailors {country}"
-        ]
+        # queries = [
+        #     f"{topic}reliable,potentials,top-rated potential distributors {country}",
+        #     f"{topic} reliable,potentials,top-rated potential suppliers {country}",
+        #     f"{topic}reliable,potentials,top-rated potential retailors {country}"
+        # ]
 
         all_results = []
         for query in queries:

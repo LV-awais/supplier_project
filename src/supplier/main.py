@@ -23,7 +23,7 @@ def run():
     Run the crew.
     """
     inputs = {
-        'topic': 'Garmin',
+        'topic': 'Ubiquiti',
         'country': "USA"
     }
     
