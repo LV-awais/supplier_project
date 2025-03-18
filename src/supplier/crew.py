@@ -2,7 +2,7 @@ from crewai import Agent, Crew, Process, Task,LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
 from dotenv import load_dotenv
-from .tools.custom_tool import CombinedTool,SerperSearchTool
+from supplier.tools.custom_tool import CombinedTool,SerperSearchTool
 
 load_dotenv()
 
