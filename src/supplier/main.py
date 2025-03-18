@@ -2,9 +2,44 @@
 import sys
 import warnings
 import os
+import logging
+from dotenv import load_dotenv
 import agentops
 from datetime import datetime
 from supplier.crew import Supplier
+from supplier.config import SupplierConfig, DEFAULT_CONFIG
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('supplier.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+def validate_environment():
+    """Validate required environment variables are set"""
+    required_vars = [
+        "AGENTOPS_API_KEY",
+        "SERPER_API_KEY",
+        "APIVOID_API_KEY",
+        "SCRAPFLY_API_KEY"
+    ]
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    if missing_vars:
+        raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
+
+# Load and validate environment variables
+try:
+    load_dotenv()
+    validate_environment()
+    logger.info("Environment variables loaded and validated successfully")
+except Exception as e:
+    logger.error(f"Failed to load environment variables: {str(e)}")
+    raise
 
 # Initialize agentops
 agentops.init(
@@ -28,10 +63,16 @@ def run():
     }
     
     try:
-        Supplier().crew().kickoff(inputs=inputs)
+        config = SupplierConfig.validate_inputs(inputs or DEFAULT_CONFIG)
+        logger.info(f"Starting crew run with config: {config}")
+        Supplier().crew().kickoff(inputs=vars(config))
+        logger.info("Crew run completed successfully")
+    except ValueError as e:
+        logger.error(f"Invalid configuration: {str(e)}", exc_info=True)
+        raise
     except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
-
+        logger.error(f"An error occurred while running the crew: {str(e)}", exc_info=True)
+        raise
 
 def train():
     """
@@ -42,20 +83,39 @@ def train():
         'country': "USA"
     }
     try:
-        Supplier().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
-
+        if len(sys.argv) < 3:
+            raise ValueError("Please provide number of iterations and filename")
+        
+        config = SupplierConfig.validate_inputs(DEFAULT_CONFIG)
+        n_iterations = int(sys.argv[1])
+        filename = sys.argv[2]
+        
+        logger.info(f"Starting crew training with {n_iterations} iterations")
+        Supplier().crew().train(n_iterations=n_iterations, filename=filename, inputs=vars(config))
+        logger.info("Crew training completed successfully")
+    except (IndexError, ValueError) as e:
+        logger.error("Invalid arguments provided for training", exc_info=True)
+        raise ValueError(str(e))
     except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
+        logger.error(f"An error occurred while training the crew: {str(e)}", exc_info=True)
+        raise
 
 def replay():
-    """
-    Replay the crew execution from a specific task.
-    """
+    """Replay the crew execution from a specific task."""
     try:
-        Supplier().crew().replay(task_id=sys.argv[1])
-
+        if len(sys.argv) < 2:
+            raise ValueError("Please provide a task_id for replay")
+            
+        task_id = sys.argv[1]
+        logger.info(f"Starting crew replay for task_id: {task_id}")
+        Supplier().crew().replay(task_id=task_id)
+        logger.info("Crew replay completed successfully")
+    except ValueError as e:
+        logger.error(str(e), exc_info=True)
+        raise
     except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
+        logger.error(f"An error occurred while replaying the crew: {str(e)}", exc_info=True)
+        raise
 
 def test():
     """
@@ -66,7 +126,19 @@ def test():
         'country': "USA"
     }
     try:
-        Supplier().crew().test(n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs)
-
+        if len(sys.argv) < 3:
+            raise ValueError("Please provide number of iterations and OpenAI model name")
+            
+        config = SupplierConfig.validate_inputs(DEFAULT_CONFIG)
+        n_iterations = int(sys.argv[1])
+        model_name = sys.argv[2]
+        
+        logger.info(f"Starting crew test with {n_iterations} iterations")
+        Supplier().crew().test(n_iterations=n_iterations, openai_model_name=model_name, inputs=vars(config))
+        logger.info("Crew test completed successfully")
+    except (IndexError, ValueError) as e:
+        logger.error("Invalid arguments provided for testing", exc_info=True)
+        raise ValueError(str(e))
     except Exception as e:
-        raise Exception(f"An error occurred while testing the crew: {e}")
+        logger.error(f"An error occurred while testing the crew: {str(e)}", exc_info=True)
+        raise
