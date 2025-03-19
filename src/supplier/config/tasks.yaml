@@ -75,8 +75,9 @@ domain_and_trustpilot_researcher_task:
 ai_suppliers_write_task:
   description: >
     Review the context you have received and expand each topic into a comprehensive section for a report.
-    DO NOT include Amazon,Quora or anyother research forums in the report.
-    ❌ **EXCLUDE** platforms like BestBuy, Reddit, Quora, eBay, Alibaba forums, and other non-supplier sources.
+    DO NOT include Amazon,Quora or any other research forums in the report.
+    ❌ **EXCLUDE** platforms like BestBuy, Reddit,newEgg, Quora, eBay, Alibaba forums, and other non-supplier sources.
+    Dont include the official website of the brand.
     
     The report should include:
       - Detailed descriptions of each supplier's business model, offerings, and any other relevant information for the supplier research team.
