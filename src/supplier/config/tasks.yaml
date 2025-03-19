@@ -4,13 +4,6 @@ retrieve_suppliers_task:
     The topic is provided by the user (e.g., "Garmin" or any other term).
     Execute multiple search queries using the input topic, for example:
       - "{topic} reliable,potentials,top-rated potential distributors {country}"
-      - "{topic} reliable,potentials,top-rated potential and authorised suppliers {country}"
-      - "{topic} reliable,potentials,top-rated  retailers {country}"
-      - "{topic} authorized suppliers and distributors {country}"
-      - "Verified {topic} retailer {country}"
-      - "{topic} wholesale distributors in {country}"
-      - "{topic} suppliers and distributors in {country}"
-      - "{topic} retailer {country}"
     
     Aggregate the results into a structured dataset including:
       - **Supplier name and description except "Amazon"**
@@ -117,6 +110,12 @@ ai_suppliers_write_task:
   agent: ai_suppliers_writer
 
 
-
-
+#
+# - "{topic} reliable,potentials,top-rated potential and authorised suppliers {country}"
+#      - "{topic} reliable,potentials,top-rated  retailers {country}"
+#      - "{topic} authorized suppliers and distributors {country}"
+#      - "Verified {topic} retailer {country}"
+#      - "{topic} wholesale distributors in {country}"
+#      - "{topic} suppliers and distributors in {country}"
+#      - "{topic} retailer {country}"
 

@@ -16,14 +16,19 @@ from urllib.parse import urlparse
 
 from crewai.tools import BaseTool
 
+import os
+import requests
+from typing import List
+
+
 class SerperSearchTool(BaseTool):
-    name: str = "SerperSearchTool"  # ✅ Corrected with type annotation
+    name: str = "SerperSearchTool"
     description: str = (
         "Fetch up to 5 pages of Google search results using the Serper API. "
         "Retrieves verified suppliers, their websites, descriptions, and metadata."
-    )  # ✅ Corrected with type annotation
+    )
 
-    def _run(self, topic: str, country: str, max_pages: int = 3,queries: list[str] = None):
+    def _run(self, topic: str, country: str, max_pages: int = 1, queries: List[str] = None):
         """
         Searches for verified suppliers using Serper API with multi-page retrieval.
         """
@@ -31,17 +36,17 @@ class SerperSearchTool(BaseTool):
         base_url = "https://google.serper.dev/search"
         headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}
 
-        # queries = [
-        #     f"{topic}reliable,potentials,top-rated potential distributors {country}",
-        #     f"{topic} reliable,potentials,top-rated potential suppliers {country}",
-        #     f"{topic}reliable,potentials,top-rated potential retailors {country}"
-        # ]
+        # List of domains to exclude
+        excluded_domains = ["reddit.com", "quora.com","linkedin.com", "ebay.com", "amazon.com", "walmart.com", "newegg.com","BestBuy.com"]
 
         all_results = []
         for query in queries:
             for page in range(max_pages):
+                # Construct the 'q' parameter to include the query and exclude specified domains
+                q_param = query + " " + " ".join([f"-site:{domain}" for domain in excluded_domains])
+
                 payload = {
-                    "q": query,
+                    "q": q_param,
                     "location": country,
                     "num": 10,  # Fetch 10 results per page
                     "page": page * 10  # Adjust start index for pagination
@@ -70,6 +75,7 @@ class SerperSearchTool(BaseTool):
                     print(f"⚠️ Error fetching page {page + 1} for query '{query}': {response.text}")
 
         return all_results
+
 
 scrapfly = ScrapflyClient(key=os.getenv("SCRAPFLY_API_KEY"))
 
