@@ -37,7 +37,7 @@ class SerperSearchTool(BaseTool):
         headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}
 
         # List of domains to exclude
-        excluded_domains = ["reddit.com", "quora.com","linkedin.com", "ebay.com", "amazon.com", "walmart.com", "newegg.com","BestBuy.com"]
+        excluded_domains = ["reddit.com", "quora.com","linkedin.com", f"{topic}.com","ebay.com", "amazon.com", "walmart.com", "newegg.com","BestBuy.com"]
 
         all_results = []
         for query in queries:
