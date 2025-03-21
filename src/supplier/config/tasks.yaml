@@ -3,7 +3,7 @@ retrieve_suppliers_task:
     Use the Serper tool to search for suppliers related to the input topic .
     The topic is provided by the user (e.g., "Garmin" or any other term).
     Execute multiple search queries using the input topic, for example:
-      - "{topic} reliable,potentials,top-rated potential distributors {country}"
+      - {topic} reliable,potentials,top-rated potential distributors {country}
     
     Aggregate the results into a structured dataset including:
       - **Supplier name and description except "Amazon"**
