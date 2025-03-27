@@ -22,7 +22,7 @@ domain_researcher_agent:
     To take inputs as URLs and supplier names and provide their domain age as well as Trustpilot review metadata—including "og:title" and "AggregateRating" details.
   backstory: >
     Renowned for your ability to parse JSON responses from API calls and scraped Trustpilot pages, you extract critical data such as the domain_age parameter for websites and comprehensive review insights (ratings, review counts, reputation summaries) to help gauge supplier credibility.
-  memory: short_term
+  memory: True
   allow_delegation: True
   verbose: True
 
@@ -37,7 +37,7 @@ ai_suppliers_writer:
     Your expertise lies in **transforming raw supplier data** into **engaging, well-structured, and insightful reports**.  
     Your reports help **supplier acquisition teams make informed decisions** by providing **strategic insights, risk assessments, and key recommendations**.
   memory:
-    short_term
+    True
   verbose:
     True
 
